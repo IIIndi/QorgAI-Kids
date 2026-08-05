@@ -41,7 +41,7 @@ function HomePage() {
   const { totalStars, state, completedCount, safetyScore, level, levelProgress, nextLessonId, questDone, isDone } =
     useProgress();
 
-  const todays = lessons.find((l) => l.id === nextLessonId) ?? lessons[lessons.length - 1];
+  const todays = lessons.find((l) => l.id === nextLessonId) ?? lessons[lessons.length - 1]!;
   const badges = lessons.filter((l) => isDone(l.id));
 
   return (
