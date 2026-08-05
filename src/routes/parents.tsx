@@ -1,0 +1,100 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { lessons } from "@/data/lessons";
+import { useI18n } from "@/lib/i18n";
+import { useProgress } from "@/lib/progress";
+import { Qorgau } from "@/components/Qorgau";
+
+export const Route = createFileRoute("/parents")({
+  head: () => ({
+    meta: [
+      { title: "Кабинет родителя — QorgAI Kids" },
+      {
+        name: "description",
+        content: "Прогресс ребёнка, уровень безопасности, сильные и слабые темы, рекомендации для повторения.",
+      },
+      { property: "og:title", content: "Кабинет родителя — QorgAI Kids" },
+      { property: "og:description", content: "Смотрите прогресс ребёнка и темы, которые стоит повторить." },
+    ],
+  }),
+  component: ParentsPage,
+});
+
+function ParentsPage() {
+  const { t, tr } = useI18n();
+  const { state, completedCount, safetyScore, totalStars, reset } = useProgress();
+
+  const results = Object.values(state.results);
+  const answered = results.reduce((s, r) => s + r.total, 0);
+  const right = results.reduce((s, r) => s + r.correct, 0);
+  const accuracy = answered ? Math.round((right / answered) * 100) : 0;
+
+  const strong = results.filter((r) => r.correct === r.total).map((r) => lessons.find((l) => l.id === r.id)!);
+  const weak = results.filter((r) => r.correct < r.total).map((r) => lessons.find((l) => l.id === r.id)!);
+  const notStarted = lessons.filter((l) => !state.results[l.id]).slice(0, 3);
+
+  return (
+    <main className="mx-auto max-w-3xl space-y-4 px-4 py-5 pb-16">
+      <div className="card-pop flex items-center gap-3 p-4">
+        <Qorgau size={80} />
+        <h1 className="font-display text-2xl">{t("parentTitle")}</h1>
+      </div>
+
+      <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {[
+          { e: "📚", v: `${completedCount}/${lessons.length}`, l: t("lessonsDone") },
+          { e: "🛡️", v: `${safetyScore}%`, l: t("safetyScore") },
+          { e: "🎯", v: `${accuracy}%`, l: t("accuracy") },
+          { e: "⭐", v: totalStars, l: t("stars") },
+        ].map((s) => (
+          <div key={s.l} className="card-pop p-3">
+            <div className="text-2xl">{s.e}</div>
+            <div className="font-display text-xl">{s.v}</div>
+            <div className="text-xs font-bold text-muted-foreground">{s.l}</div>
+          </div>
+        ))}
+      </section>
+
+      <section className="card-pop space-y-2 border-primary/40 p-4">
+        <h2 className="font-display text-lg text-primary-dark">{t("strengths")}</h2>
+        {strong.length ? (
+          <ul className="space-y-1 text-sm font-bold">
+            {strong.map((l) => (
+              <li key={l.id}>✅ {tr(l.title)}</li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm font-bold text-muted-foreground">{t("noStrong")}</p>
+        )}
+      </section>
+
+      <section className="card-pop space-y-2 border-sun p-4">
+        <h2 className="font-display text-lg">{t("weaknesses")}</h2>
+        {weak.length ? (
+          <ul className="space-y-1 text-sm font-bold">
+            {weak.map((l) => (
+              <li key={l.id}>⚠️ {tr(l.title)}</li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm font-bold text-muted-foreground">{t("noWeak")}</p>
+        )}
+      </section>
+
+      <section className="card-pop space-y-2 bg-secondary p-4">
+        <h2 className="font-display text-lg">{t("recommendations")}</h2>
+        <p className="text-sm font-bold">{t("recommendText")}</p>
+        <ul className="space-y-1 text-sm font-bold">
+          {[...weak, ...notStarted].slice(0, 4).map((l) => (
+            <li key={l.id}>
+              {l.emoji} {tr(l.title)} — «{tr(l.rule)}»
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <button onClick={reset} className="btn-pop w-full border-2 border-border bg-card px-4 py-3 text-sm">
+        {t("reset")}
+      </button>
+    </main>
+  );
+}
