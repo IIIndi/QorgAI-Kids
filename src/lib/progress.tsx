@@ -63,7 +63,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
       streak = state.lastDay === yesterday ? state.streak + 1 : 1;
     }
-    const coinsEarned = prev ? 10 : 20 + r.stars * 10;
+    const isFinal = r.id === lessons[lessons.length - 1]!.id;
+    const coinsEarned = prev ? 10 : 20 + r.stars * 10 + (isFinal ? 100 : 0);
     persist({
       results: { ...state.results, [r.id]: { ...r, date: day, stars: Math.max(r.stars, prev?.stars ?? 0) } },
       coins: state.coins + coinsEarned,
