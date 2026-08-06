@@ -121,14 +121,24 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
-        <ProgressProvider>
-          <div className="bg-grass min-h-screen">
-            <AppHeader />
-            {/* Required: nested routes render here. */}
-            <Outlet />
-          </div>
-        </ProgressProvider>
+        <ProfileProvider>
+          <ProgressProvider>
+            <div className="bg-grass min-h-screen">
+              <AppHeader />
+              <AppBody />
+            </div>
+          </ProgressProvider>
+        </ProfileProvider>
       </LanguageProvider>
     </QueryClientProvider>
   );
+}
+
+function AppBody() {
+  const { profile, ready } = useProfile();
+  if (ready && !profile) return <Register />;
+  {
+    /* Required: nested routes render here. */
+  }
+  return <Outlet />;
 }
