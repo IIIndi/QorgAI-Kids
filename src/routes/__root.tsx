@@ -13,6 +13,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LanguageProvider } from "@/lib/i18n";
 import { ProgressProvider } from "@/lib/progress";
+import { ProfileProvider, useProfile } from "@/lib/profile";
+import { Register } from "@/components/Register";
 import { AppHeader } from "@/components/AppHeader";
 
 function NotFoundComponent() {
