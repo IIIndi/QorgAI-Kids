@@ -51,6 +51,8 @@ const dict = {
   correct: { ru: "Отличный выбор!", kk: "Тамаша таңдау!", en: "Great choice!" },
   wrong: { ru: "Так делать опасно", kk: "Бұлай істеу қауіпті", en: "That's a risky move" },
   lessonDone: { ru: "Урок пройден!", kk: "Сабақ аяқталды!", en: "Lesson complete!" },
+  tryAgain: { ru: "Попробовать ещё раз", kk: "Қайта көру", en: "Try again" },
+  thinkAgain: { ru: "Ничего страшного! Подумай ещё раз 💚", kk: "Ештеңе етпейді! Тағы ойлан 💚", en: "No worries! Think again 💚" },
   earned: { ru: "Ты заработал", kk: "Сен таптың", en: "You earned" },
   newBadge: { ru: "Новый значок", kk: "Жаңа белгі", en: "New badge" },
   nextLesson: { ru: "Следующий урок", kk: "Келесі сабақ", en: "Next lesson" },
