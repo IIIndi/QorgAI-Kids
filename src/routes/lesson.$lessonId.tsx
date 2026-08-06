@@ -21,6 +21,10 @@ export const Route = createFileRoute("/lesson/$lessonId")({
 
 function LessonPage() {
   const { lessonId } = Route.useParams();
+  return <LessonRunner key={lessonId} lessonId={lessonId} />;
+}
+
+function LessonRunner({ lessonId }: { lessonId: string }) {
   const { t, tr } = useI18n();
   const { completeLesson } = useProgress();
   const navigate = useNavigate();
@@ -28,7 +32,8 @@ function LessonPage() {
 
   const [step, setStep] = useState(0);
   const [picked, setPicked] = useState<number | null>(null);
-  const [correct, setCorrect] = useState(0);
+  const [wrongPicks, setWrongPicks] = useState<number[]>([]);
+  const [mistakes, setMistakes] = useState(0);
   const [finished, setFinished] = useState(false);
   const [jump, setJump] = useState(false);
 
@@ -43,24 +48,31 @@ function LessonPage() {
   }
 
   const scene = lesson.scenes[step]!;
-  const stars = Math.max(1, Math.round((correct / lesson.scenes.length) * 3));
+  const total = lesson.scenes.length;
+  const stars = mistakes === 0 ? 3 : mistakes <= 2 ? 2 : 1;
+  const isCorrect = picked !== null && scene.options[picked]!.safe;
 
   const pick = (i: number) => {
-    if (picked !== null) return;
+    if (isCorrect || wrongPicks.includes(i)) return;
     setPicked(i);
     if (scene.options[i]!.safe) {
-      setCorrect((c) => c + 1);
       setJump(true);
       setTimeout(() => setJump(false), 800);
+    } else {
+      setWrongPicks((w) => [...w, i]);
+      setMistakes((m) => m + 1);
     }
   };
 
+  const retry = () => setPicked(null);
+
   const next = () => {
-    if (step + 1 < lesson.scenes.length) {
+    if (step + 1 < total) {
       setStep(step + 1);
       setPicked(null);
+      setWrongPicks([]);
     } else {
-      completeLesson({ id: lesson.id, stars, correct, total: lesson.scenes.length });
+      completeLesson({ id: lesson.id, stars, correct: total, total });
       setFinished(true);
     }
   };
@@ -71,7 +83,7 @@ function LessonPage() {
       <main className="mx-auto max-w-2xl space-y-4 px-4 py-6 pb-16">
         <Confetti />
         <section className="card-pop animate-slide-up space-y-4 border-primary p-5 text-center">
-          <Qorgau size={150} mood="jump" className="mx-auto" />
+          <QorgauSays text={`${t("lessonDone")} ${tr(lesson.title)} 🎉`} size={130} mood="jump" />
           <h1 className="font-display text-3xl text-primary-dark">{t("lessonDone")}</h1>
           <div className="text-4xl">{"⭐".repeat(stars)}</div>
           <p className="font-bold">
@@ -101,6 +113,7 @@ function LessonPage() {
       </main>
     );
   }
+
 
   return (
     <main className="mx-auto max-w-2xl space-y-4 px-4 py-5 pb-16">
