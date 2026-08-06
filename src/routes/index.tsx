@@ -50,7 +50,7 @@ function HomePage() {
     <main className="mx-auto max-w-5xl space-y-5 px-4 py-5 pb-16">
       <section className="card-pop animate-slide-up overflow-hidden p-4 sm:p-6">
         <QorgauSays
-          text={profile ? `${t("hello")}, ${profile.name}! ${t("greeting")}` : t("greeting")}
+          text={profile ? `${t("hello")}, ${profile.name}! ${t("greetingNamed")}` : t("greeting")}
           size={130}
           mood="wave"
         />

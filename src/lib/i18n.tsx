@@ -104,6 +104,11 @@ const dict = {
   age89: { ru: "8–9 лет", kk: "8–9 жас", en: "8–9 years" },
   age1011: { ru: "10–11 лет", kk: "10–11 жас", en: "10–11 years" },
   saveProfile: { ru: "Сохранить профиль", kk: "Профильді сақтау", en: "Save profile" },
+  greetingNamed: {
+    ru: "Я Qorgau. Сегодня научу тебя быть в безопасности!",
+    kk: "Мен Qorgau. Бүгін сені қауіпсіз болуға үйретемін!",
+    en: "I'm Qorgau. Today I'll teach you how to stay safe!",
+  },
   hello: { ru: "Привет", kk: "Сәлем", en: "Hi" },
   ageGroup: { ru: "Возрастная группа", kk: "Жас тобы", en: "Age group" },
   changeProfile: { ru: "Сменить профиль", kk: "Профильді ауыстыру", en: "Switch profile" },
