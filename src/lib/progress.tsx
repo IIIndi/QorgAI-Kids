@@ -24,6 +24,11 @@ type Ctx = {
   level: number;
   levelProgress: number;
   nextLessonId: number;
+  percent: number;
+  maxUnlockedId: number;
+  isUnlocked: (id: number) => boolean;
+  finalLessonId: number;
+  finalDone: boolean;
   isDone: (id: number) => boolean;
   questDone: boolean;
   ready: boolean;
@@ -58,7 +63,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
       streak = state.lastDay === yesterday ? state.streak + 1 : 1;
     }
-    const coinsEarned = prev ? 10 : 20 + r.stars * 10;
+    const isFinal = r.id === lessons[lessons.length - 1]!.id;
+    const coinsEarned = prev ? 10 : 20 + r.stars * 10 + (isFinal ? 100 : 0);
     persist({
       results: { ...state.results, [r.id]: { ...r, date: day, stars: Math.max(r.stars, prev?.stars ?? 0) } },
       coins: state.coins + coinsEarned,
@@ -77,6 +83,12 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   const level = Math.floor(totalStars / 5) + 1;
   const levelProgress = ((totalStars % 5) / 5) * 100;
   const nextLessonId = lessons.find((l) => !state.results[l.id])?.id ?? lessons.length;
+  const percent = Math.round((completedCount / lessons.length) * 100);
+  const finalLessonId = lessons[lessons.length - 1]!.id;
+  // Уроки открываются последовательно: доступен следующий после последнего пройденного.
+  const highestDone = results.length ? Math.max(...results.map((r) => r.id)) : 0;
+  const maxUnlockedId = Math.min(finalLessonId, Math.max(nextLessonId, highestDone + 1));
+  const finalDone = Boolean(state.results[finalLessonId]);
 
   const value: Ctx = {
     state,
@@ -88,6 +100,11 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     level,
     levelProgress,
     nextLessonId,
+    percent,
+    maxUnlockedId,
+    isUnlocked: (id) => id <= maxUnlockedId || Boolean(state.results[id]),
+    finalLessonId,
+    finalDone,
     isDone: (id) => Boolean(state.results[id]),
     questDone: state.lastDay === today(),
     ready,

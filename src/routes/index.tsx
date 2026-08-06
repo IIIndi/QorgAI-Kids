@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { lessons } from "@/data/lessons";
 import { useI18n } from "@/lib/i18n";
 import { useProgress } from "@/lib/progress";
+import { useProfile } from "@/lib/profile";
 import { QorgauSays } from "@/components/Qorgau";
 import { cn } from "@/lib/utils";
 
@@ -38,8 +39,9 @@ function StatCard({ emoji, value, label }: { emoji: string; value: string | numb
 
 function HomePage() {
   const { t, tr } = useI18n();
-  const { totalStars, state, completedCount, safetyScore, level, levelProgress, nextLessonId, questDone, isDone } =
+  const { totalStars, state, completedCount, safetyScore, level, levelProgress, nextLessonId, questDone, isDone, percent, finalLessonId, finalDone } =
     useProgress();
+  const { profile } = useProfile();
 
   const todays = lessons.find((l) => l.id === nextLessonId) ?? lessons[lessons.length - 1]!;
   const badges = lessons.filter((l) => isDone(l.id));
@@ -47,7 +49,11 @@ function HomePage() {
   return (
     <main className="mx-auto max-w-5xl space-y-5 px-4 py-5 pb-16">
       <section className="card-pop animate-slide-up overflow-hidden p-4 sm:p-6">
-        <QorgauSays text={t("greeting")} size={130} mood="wave" />
+        <QorgauSays
+          text={profile ? `${t("hello")}, ${profile.name}! ${t("greetingNamed")}` : t("greeting")}
+          size={130}
+          mood="wave"
+        />
         <p className="mt-3 text-sm font-bold text-muted-foreground">{t("tagline")}</p>
       </section>
 
@@ -64,7 +70,7 @@ function HomePage() {
             {t("level")} {level}
           </h2>
           <span className="text-sm font-bold text-muted-foreground">
-            {completedCount} {t("of")} {lessons.length} · {t("progress")}
+            {completedCount} {t("of")} {lessons.length} · {percent}% {t("progress")}
           </span>
         </div>
         <div className="h-4 overflow-hidden rounded-full bg-muted">
@@ -80,6 +86,18 @@ function HomePage() {
           <span>{Math.round(levelProgress)}%</span>
         </div>
       </section>
+
+      {finalDone ? (
+        <section className="card-pop flex items-center gap-3 border-primary bg-secondary p-4">
+          <span className="text-3xl">🏆</span>
+          <p className="font-extrabold text-primary-dark">{t("courseDone")}</p>
+        </section>
+      ) : completedCount === lessons.length - 1 && !isDone(finalLessonId) ? (
+        <section className="card-pop flex items-center gap-3 border-sun bg-accent p-4">
+          <span className="text-3xl">🎓</span>
+          <p className="font-extrabold text-accent-foreground">{t("finalUnlocked")}</p>
+        </section>
+      ) : null}
 
       <section className="card-pop space-y-4 border-primary/40 p-4 sm:p-6">
         <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wide text-primary-dark">

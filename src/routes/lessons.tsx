@@ -21,7 +21,7 @@ export const Route = createFileRoute("/lessons")({
 
 function LessonsPage() {
   const { t, tr } = useI18n();
-  const { isDone, state } = useProgress();
+  const { isDone, state, isUnlocked } = useProgress();
 
   const tracks = [
     { key: "online" as const, title: t("online") },
@@ -44,6 +44,27 @@ function LessonsPage() {
               .map((l) => {
                 const done = isDone(l.id);
                 const stars = state.results[l.id]?.stars ?? 0;
+                const open = isUnlocked(l.id);
+                if (!open) {
+                  return (
+                    <div
+                      key={l.id}
+                      className="card-pop flex items-center gap-3 p-4 opacity-60"
+                      title={t("lockedLesson")}
+                    >
+                      <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-muted text-2xl">
+                        🔒
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-extrabold text-muted-foreground">
+                          {t("lesson")} {l.id}
+                        </div>
+                        <div className="truncate font-display text-base">{tr(l.title)}</div>
+                        <div className="text-xs font-bold text-muted-foreground">{t("lockedLesson")}</div>
+                      </div>
+                    </div>
+                  );
+                }
                 return (
                   <Link
                     key={l.id}

@@ -13,6 +13,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LanguageProvider } from "@/lib/i18n";
 import { ProgressProvider } from "@/lib/progress";
+import { ProfileProvider, useProfile } from "@/lib/profile";
+import { Register } from "@/components/Register";
 import { AppHeader } from "@/components/AppHeader";
 
 function NotFoundComponent() {
@@ -121,14 +123,24 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
-        <ProgressProvider>
-          <div className="bg-grass min-h-screen">
-            <AppHeader />
-            {/* Required: nested routes render here. */}
-            <Outlet />
-          </div>
-        </ProgressProvider>
+        <ProfileProvider>
+          <ProgressProvider>
+            <div className="bg-grass min-h-screen">
+              <AppHeader />
+              <AppBody />
+            </div>
+          </ProgressProvider>
+        </ProfileProvider>
       </LanguageProvider>
     </QueryClientProvider>
   );
+}
+
+function AppBody() {
+  const { profile, ready } = useProfile();
+  if (ready && !profile) return <Register />;
+  {
+    /* Required: nested routes render here. */
+  }
+  return <Outlet />;
 }

@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { lessons, getLesson } from "@/data/lessons";
 import { useI18n } from "@/lib/i18n";
 import { useProgress } from "@/lib/progress";
+import { useProfile } from "@/lib/profile";
 import { Qorgau, QorgauSays } from "@/components/Qorgau";
 import { Confetti } from "@/components/Confetti";
 import { cn } from "@/lib/utils";
@@ -26,7 +27,8 @@ function LessonPage() {
 
 function LessonRunner({ lessonId }: { lessonId: string }) {
   const { t, tr } = useI18n();
-  const { completeLesson } = useProgress();
+  const { completeLesson, isUnlocked, finalLessonId } = useProgress();
+  const { profile } = useProfile();
   const navigate = useNavigate();
   const lesson = useMemo(() => getLesson(Number(lessonId)), [lessonId]);
 
@@ -36,6 +38,20 @@ function LessonRunner({ lessonId }: { lessonId: string }) {
   const [mistakes, setMistakes] = useState(0);
   const [finished, setFinished] = useState(false);
   const [jump, setJump] = useState(false);
+
+  if (lesson && !isUnlocked(lesson.id)) {
+    return (
+      <main className="mx-auto max-w-2xl space-y-3 p-6 text-center">
+        <div className="card-pop space-y-2 p-5">
+          <div className="text-4xl">🔒</div>
+          <p className="font-extrabold">{t("lockedLesson")}</p>
+          <Link to="/lessons" className="font-extrabold text-primary-dark underline">
+            {t("allLessons")}
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
   if (!lesson) {
     return (
@@ -92,6 +108,11 @@ function LessonRunner({ lessonId }: { lessonId: string }) {
           <div className="rounded-2xl bg-accent px-4 py-3 font-extrabold text-accent-foreground">
             🏅 {t("newBadge")}: {tr(lesson.badge)}
           </div>
+          {lesson.id === finalLessonId && (
+            <div className="rounded-2xl border-2 border-primary bg-secondary p-4 font-extrabold text-primary-dark">
+              🏆 {t("finalReward")}: +100 🪙 — {t("courseDone")}
+            </div>
+          )}
           <div className="rounded-2xl border-2 border-primary/40 bg-secondary p-4 text-left">
             <div className="text-xs font-extrabold uppercase text-primary-dark">{t("ruleOfDay")}</div>
             <p className="mt-1 font-bold">{tr(lesson.rule)}</p>
@@ -138,6 +159,7 @@ function LessonRunner({ lessonId }: { lessonId: string }) {
           <div>
             <div className="text-xs font-extrabold uppercase text-muted-foreground">
               {t("lesson")} {lesson.id} · {lesson.track === "online" ? t("online") : t("real")}
+              {profile ? ` · ${profile.age === "8-9" ? t("age89") : t("age1011")}` : ""}
             </div>
             <h1 className="font-display text-2xl leading-tight">{tr(lesson.title)}</h1>
           </div>
