@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { lessons } from "@/data/lessons";
 import { useI18n } from "@/lib/i18n";
 import { useProgress } from "@/lib/progress";
+import { useProfile } from "@/lib/profile";
 import { Qorgau } from "@/components/Qorgau";
 
 export const Route = createFileRoute("/parents")({
@@ -21,7 +22,8 @@ export const Route = createFileRoute("/parents")({
 
 function ParentsPage() {
   const { t, tr } = useI18n();
-  const { state, completedCount, safetyScore, totalStars, reset } = useProgress();
+  const { state, completedCount, safetyScore, totalStars, reset, percent } = useProgress();
+  const { profile, signOut } = useProfile();
 
   const results = Object.values(state.results);
   const answered = results.reduce((s, r) => s + r.total, 0);
@@ -38,6 +40,21 @@ function ParentsPage() {
         <Qorgau size={80} />
         <h1 className="font-display text-2xl">{t("parentTitle")}</h1>
       </div>
+
+      {profile && (
+        <section className="card-pop flex flex-wrap items-center gap-3 border-primary/40 p-4">
+          <div>
+            <div className="text-xs font-extrabold uppercase text-muted-foreground">{t("childProfile")}</div>
+            <div className="font-display text-xl">{profile.name}</div>
+          </div>
+          <div className="rounded-full bg-secondary px-3 py-1 text-sm font-extrabold text-secondary-foreground">
+            {profile.age === "8-9" ? t("age89") : t("age1011")}
+          </div>
+          <div className="rounded-full bg-accent px-3 py-1 text-sm font-extrabold text-accent-foreground">
+            {t("completion")}: {percent}%
+          </div>
+        </section>
+      )}
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[
@@ -91,6 +108,10 @@ function ParentsPage() {
           ))}
         </ul>
       </section>
+
+      <button onClick={signOut} className="btn-pop w-full border-2 border-border bg-card px-4 py-3 text-sm">
+        {t("changeProfile")}
+      </button>
 
       <button onClick={reset} className="btn-pop w-full border-2 border-border bg-card px-4 py-3 text-sm">
         {t("reset")}
