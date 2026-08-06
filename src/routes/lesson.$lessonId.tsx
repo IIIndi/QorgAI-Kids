@@ -128,7 +128,7 @@ function LessonRunner({ lessonId }: { lessonId: string }) {
       <div className="h-3 overflow-hidden rounded-full bg-muted">
         <div
           className="h-full bg-primary transition-all duration-500"
-          style={{ width: `${((step + (picked !== null ? 1 : 0)) / lesson.scenes.length) * 100}%` }}
+          style={{ width: `${((step + (isCorrect ? 1 : 0)) / total) * 100}%` }}
         />
       </div>
 
@@ -165,17 +165,18 @@ function LessonRunner({ lessonId }: { lessonId: string }) {
         <div className="space-y-2">
           {scene.options.map((op, i) => {
             const active = picked === i;
+            const isWrongTried = wrongPicks.includes(i);
             return (
               <button
                 key={i}
                 onClick={() => pick(i)}
-                disabled={picked !== null}
+                disabled={isCorrect || isWrongTried}
                 className={cn(
                   "btn-pop w-full border-2 px-4 py-3 text-left font-bold",
-                  picked === null && "border-border bg-card hover:border-primary hover:bg-secondary",
-                  picked !== null && !active && "border-border bg-muted opacity-60",
+                  !isCorrect && !isWrongTried && "border-border bg-card hover:border-primary hover:bg-secondary",
+                  isWrongTried && "border-destructive/50 bg-danger-soft opacity-70",
+                  isCorrect && !active && "border-border bg-muted opacity-60",
                   active && op.safe && "border-primary bg-secondary",
-                  active && !op.safe && "border-destructive bg-danger-soft",
                 )}
               >
                 {tr(op.text)}
@@ -187,20 +188,33 @@ function LessonRunner({ lessonId }: { lessonId: string }) {
         {picked !== null && (
           <div className="animate-slide-up space-y-3">
             <QorgauSays
-              text={`${scene.options[picked]!.safe ? t("correct") : t("wrong")} — ${tr(scene.options[picked]!.explain)}`}
+              text={`${isCorrect ? t("correct") : t("wrong")} — ${tr(scene.options[picked]!.explain)}`}
               size={90}
               mood={jump ? "jump" : "idle"}
-              tone={scene.options[picked]!.safe ? "green" : "yellow"}
+              tone={isCorrect ? "green" : "yellow"}
             />
-            <button
-              onClick={next}
-              className="btn-pop w-full bg-primary px-4 py-3 text-lg text-primary-foreground shadow-pop hover:bg-primary-dark"
-            >
-              {step + 1 < lesson.scenes.length ? t("next") : t("finish")} →
-            </button>
+            {isCorrect ? (
+              <button
+                onClick={next}
+                className="btn-pop w-full bg-primary px-4 py-3 text-lg text-primary-foreground shadow-pop hover:bg-primary-dark"
+              >
+                {step + 1 < total ? t("next") : t("finish")} →
+              </button>
+            ) : (
+              <button
+                onClick={retry}
+                className="btn-pop w-full border-2 border-sun bg-accent px-4 py-3 text-lg text-accent-foreground"
+              >
+                🔄 {t("tryAgain")}
+              </button>
+            )}
+            {!isCorrect && (
+              <p className="text-center text-sm font-bold text-muted-foreground">{t("thinkAgain")}</p>
+            )}
           </div>
         )}
       </section>
+
 
       <section className="card-pop border-sun bg-accent p-4">
         <div className="text-xs font-extrabold uppercase text-accent-foreground">{t("ruleOfDay")}</div>
