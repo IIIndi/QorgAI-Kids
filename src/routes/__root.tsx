@@ -125,12 +125,15 @@ function RootComponent() {
       <LanguageProvider>
         <ProfileProvider>
           <ProgressProvider>
-            <div className="bg-grass min-h-screen">
-              <AppHeader />
-              <AppBody />
-            </div>
+            <QorgaiAssistant>
+              <div className="bg-grass min-h-screen">
+                <AppHeader />
+                <AppBody />
+              </div>
+            </QorgaiAssistant>
           </ProgressProvider>
         </ProfileProvider>
+
       </LanguageProvider>
     </QueryClientProvider>
   );
