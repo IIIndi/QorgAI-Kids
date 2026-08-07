@@ -16,6 +16,8 @@ import { ProgressProvider } from "@/lib/progress";
 import { ProfileProvider, useProfile } from "@/lib/profile";
 import { Register } from "@/components/Register";
 import { AppHeader } from "@/components/AppHeader";
+import { QorgaiAssistant } from "@/components/QorgaiAssistant";
+
 
 function NotFoundComponent() {
   return (
