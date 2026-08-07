@@ -128,6 +128,26 @@ const dict = {
   completion: { ru: "Процент прохождения", kk: "Өту пайызы", en: "Completion" },
   childProfile: { ru: "Профиль ребёнка", kk: "Бала профилі", en: "Child profile" },
   of: { ru: "из", kk: "/", en: "of" },
+  aiTitle: { ru: "QorgAI-помощник", kk: "QorgAI көмекші", en: "QorgAI helper" },
+  aiSubtitle: { ru: "Спроси котёнка о безопасности", kk: "Мысықтан қауіпсіздік туралы сұра", en: "Ask the kitten about safety" },
+  aiHello: {
+    ru: "Привет! Я QorgAI 🐱 Спроси меня о безопасности или пришли подозрительное сообщение — я объясню, есть ли обман.",
+    kk: "Сәлем! Мен QorgAI 🐱 Қауіпсіздік туралы сұра немесе күдікті хабарламаны жібер — алаяқтық бар-жоғын түсіндіремін.",
+    en: "Hi! I'm QorgAI 🐱 Ask me about safety or paste a suspicious message — I'll explain if it's a scam.",
+  },
+  aiQuick1: { ru: "Проверь это сообщение", kk: "Осы хабарламаны тексер", en: "Check this message" },
+  aiQuick2: { ru: "Что такое фишинг?", kk: "Фишинг деген не?", en: "What is phishing?" },
+  aiQuick3: { ru: "Ко мне подошёл незнакомец", kk: "Маған бейтаныс адам келді", en: "A stranger approached me" },
+  aiPlaceholder: { ru: "Напиши свой вопрос…", kk: "Сұрағыңды жаз…", en: "Type your question…" },
+  aiSend: { ru: "Отправить", kk: "Жіберу", en: "Send" },
+  aiThinking: { ru: "Qorgau думает…", kk: "Qorgau ойлануда…", en: "Qorgau is thinking…" },
+  aiError: { ru: "Ой, я не смог ответить. Попробуй ещё раз 🐾", kk: "Ой, жауап бере алмадым. Қайта көр 🐾", en: "Oops, I couldn't answer. Try again 🐾" },
+  aiBusy: { ru: "Слишком много вопросов сразу. Подожди минутку 🐾", kk: "Сұрақ тым көп. Бір минут күте тұр 🐾", en: "Too many questions at once. Wait a minute 🐾" },
+  aiNoCredits: { ru: "У помощника закончились лимиты. Попроси взрослого пополнить 🐾", kk: "Көмекшінің лимиті бітті. Үлкендерден толтыруын сұра 🐾", en: "The helper ran out of credits. Ask an adult to top up 🐾" },
+  aiExplain: { ru: "🐱 Объясни подробнее", kk: "🐱 Толығырақ түсіндір", en: "🐱 Explain more" },
+  aiSummary: { ru: "🐱 Итог от QorgAI", kk: "🐱 QorgAI қорытындысы", en: "🐱 QorgAI summary" },
+  aiParentTips: { ru: "🐱 AI-рекомендации для родителей", kk: "🐱 Ата-анаға AI кеңестері", en: "🐱 AI tips for parents" },
+
 } satisfies Record<string, T3>;
 
 export type DictKey = keyof typeof dict;
