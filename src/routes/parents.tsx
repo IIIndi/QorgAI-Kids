@@ -4,6 +4,7 @@ import { useI18n } from "@/lib/i18n";
 import { useProgress } from "@/lib/progress";
 import { useProfile } from "@/lib/profile";
 import { Qorgau } from "@/components/Qorgau";
+import { useQorgai } from "@/components/QorgaiAssistant";
 
 export const Route = createFileRoute("/parents")({
   head: () => ({
@@ -24,6 +25,7 @@ function ParentsPage() {
   const { t, tr } = useI18n();
   const { state, completedCount, safetyScore, totalStars, reset, percent } = useProgress();
   const { profile, signOut } = useProfile();
+  const { ask } = useQorgai();
 
   const results = Object.values(state.results);
   const answered = results.reduce((s, r) => s + r.total, 0);
@@ -108,6 +110,18 @@ function ParentsPage() {
           ))}
         </ul>
       </section>
+
+      <button
+        onClick={() =>
+          ask(
+            `Ты помощник для родителя. Ребёнок${profile ? ` ${profile.name}, возраст ${profile.age}` : ""} прошёл ${completedCount} из ${lessons.length} уроков безопасности, индекс безопасности ${safetyScore}%, точность ответов ${accuracy}%. Сильные темы: ${strong.map((l) => tr(l.title)).join(", ") || "пока нет"}. Слабые темы: ${weak.map((l) => tr(l.title)).join(", ") || "пока нет"}. Не пройдены: ${notStarted.map((l) => tr(l.title)).join(", ") || "нет"}. Дай родителю 3-4 коротких персональных совета, какие темы повторить и как обсудить их с ребёнком.`,
+            t("aiParentTips"),
+          )
+        }
+        className="btn-pop w-full border-2 border-primary bg-secondary px-4 py-3 font-extrabold text-primary-dark"
+      >
+        {t("aiParentTips")}
+      </button>
 
       <button onClick={signOut} className="btn-pop w-full border-2 border-border bg-card px-4 py-3 text-sm">
         {t("changeProfile")}

@@ -2,11 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { Home, BookOpen, Users } from "lucide-react";
 import { languages, useI18n } from "@/lib/i18n";
 import { useProgress } from "@/lib/progress";
+import { useProfile } from "@/lib/profile";
 import { cn } from "@/lib/utils";
 
 export function AppHeader() {
   const { t, lang, setLang } = useI18n();
   const { totalStars, state } = useProgress();
+  const { update } = useProfile();
 
   const nav = [
     { to: "/", label: t("home"), icon: Home },
@@ -35,7 +37,10 @@ export function AppHeader() {
           {languages.map((l) => (
             <button
               key={l.code}
-              onClick={() => setLang(l.code)}
+              onClick={() => {
+                setLang(l.code);
+                update({ lang: l.code });
+              }}
               aria-label={l.label}
               className={cn(
                 "px-2.5 py-1 text-sm transition-colors",

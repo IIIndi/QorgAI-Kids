@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 export type AgeGroup = "8-9" | "10-11";
-export type Profile = { name: string; age: AgeGroup; createdAt: string };
+export type Profile = { name: string; age: AgeGroup; createdAt: string; lang?: string };
 
 const KEY = "qorgai-profile-v1";
 
@@ -9,6 +9,7 @@ type Ctx = {
   profile: Profile | null;
   ready: boolean;
   save: (p: { name: string; age: AgeGroup }) => void;
+  update: (p: Partial<Pick<Profile, "name" | "age" | "lang">>) => void;
   signOut: () => void;
 };
 
@@ -38,13 +39,22 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(KEY, JSON.stringify(next));
   };
 
+  const update = (p: Partial<Pick<Profile, "name" | "age" | "lang">>) => {
+    setProfile((cur) => {
+      if (!cur) return cur;
+      const next = { ...cur, ...p };
+      localStorage.setItem(KEY, JSON.stringify(next));
+      return next;
+    });
+  };
+
   const signOut = () => {
     setProfile(null);
     localStorage.removeItem(KEY);
   };
 
   return (
-    <ProfileContext.Provider value={{ profile, ready, save, signOut }}>{children}</ProfileContext.Provider>
+    <ProfileContext.Provider value={{ profile, ready, save, update, signOut }}>{children}</ProfileContext.Provider>
   );
 }
 
