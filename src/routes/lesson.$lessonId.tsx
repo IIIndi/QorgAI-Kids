@@ -6,6 +6,7 @@ import { useProgress } from "@/lib/progress";
 import { useProfile } from "@/lib/profile";
 import { Qorgau, QorgauSays } from "@/components/Qorgau";
 import { Confetti } from "@/components/Confetti";
+import { useQorgai } from "@/components/QorgaiAssistant";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/lesson/$lessonId")({
@@ -30,6 +31,7 @@ function LessonRunner({ lessonId }: { lessonId: string }) {
   const { completeLesson, isUnlocked, finalLessonId } = useProgress();
   const { profile } = useProfile();
   const navigate = useNavigate();
+  const { ask } = useQorgai();
   const lesson = useMemo(() => getLesson(Number(lessonId)), [lessonId]);
 
   const [step, setStep] = useState(0);
@@ -117,6 +119,17 @@ function LessonRunner({ lessonId }: { lessonId: string }) {
             <div className="text-xs font-extrabold uppercase text-primary-dark">{t("ruleOfDay")}</div>
             <p className="mt-1 font-bold">{tr(lesson.rule)}</p>
           </div>
+          <button
+            onClick={() =>
+              ask(
+                `Я прошёл(ла) урок «${tr(lesson.title)}». Правило урока: «${tr(lesson.rule)}». Мои звёзды: ${stars} из 3. Похвали меня, коротко подведи итог урока простыми словами и мотивируй перейти к следующему уроку.`,
+                t("aiSummary"),
+              )
+            }
+            className="btn-pop w-full border-2 border-primary bg-secondary px-4 py-3 font-extrabold text-primary-dark"
+          >
+            {t("aiSummary")}
+          </button>
           <div className="flex flex-col gap-2 sm:flex-row">
             {nextL && (
               <button
@@ -233,6 +246,17 @@ function LessonRunner({ lessonId }: { lessonId: string }) {
             {!isCorrect && (
               <p className="text-center text-sm font-bold text-muted-foreground">{t("thinkAgain")}</p>
             )}
+            <button
+              onClick={() =>
+                ask(
+                  `Ситуация: ${tr(scene.question)}. Я выбрал(а) ответ: «${tr(scene.options[picked]!.text)}». Этот ответ ${isCorrect ? "правильный" : "неправильный"}. Объясни простыми словами, почему, и как надо действовать в такой ситуации.`,
+                  t("aiExplain"),
+                )
+              }
+              className="btn-pop w-full border-2 border-primary bg-card px-4 py-2 text-sm font-extrabold text-primary-dark"
+            >
+              {t("aiExplain")}
+            </button>
           </div>
         )}
       </section>

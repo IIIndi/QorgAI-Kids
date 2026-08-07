@@ -16,6 +16,8 @@ import { ProgressProvider } from "@/lib/progress";
 import { ProfileProvider, useProfile } from "@/lib/profile";
 import { Register } from "@/components/Register";
 import { AppHeader } from "@/components/AppHeader";
+import { QorgaiAssistant } from "@/components/QorgaiAssistant";
+
 
 function NotFoundComponent() {
   return (
@@ -125,12 +127,15 @@ function RootComponent() {
       <LanguageProvider>
         <ProfileProvider>
           <ProgressProvider>
-            <div className="bg-grass min-h-screen">
-              <AppHeader />
-              <AppBody />
-            </div>
+            <QorgaiAssistant>
+              <div className="bg-grass min-h-screen">
+                <AppHeader />
+                <AppBody />
+              </div>
+            </QorgaiAssistant>
           </ProgressProvider>
         </ProfileProvider>
+
       </LanguageProvider>
     </QueryClientProvider>
   );
