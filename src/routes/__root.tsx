@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LanguageProvider } from "@/lib/i18n";
+import { AuthProvider } from "@/lib/auth";
 import { ProgressProvider } from "@/lib/progress";
 import { ProfileProvider, useProfile } from "@/lib/profile";
 import { Register } from "@/components/Register";
@@ -125,6 +126,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
+        <AuthProvider>
         <ProfileProvider>
           <ProgressProvider>
             <QorgaiAssistant>
@@ -135,6 +137,7 @@ function RootComponent() {
             </QorgaiAssistant>
           </ProgressProvider>
         </ProfileProvider>
+        </AuthProvider>
 
       </LanguageProvider>
     </QueryClientProvider>
