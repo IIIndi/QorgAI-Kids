@@ -23,13 +23,17 @@ function systemPrompt(lang: "ru" | "kk" | "en", age: string, name?: string) {
   ].join(" ");
 }
 
-export const askQorgai = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => Input.parse(data))
-  .handler(async ({ data }) => {
-    const key = process.env["LOVABLE_API_KEY"];
-    if (!key) return { text: "", error: "no_key" as const };
+type Attempt =
+  | { ok: true; text: string }
+  | { ok: false; error: "rate_limited" | "no_credits" | "failed"; retryable: boolean };
 
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
+async function callModel(
+  key: string,
+  data: z.infer<typeof Input>,
+): Promise<Attempt> {
+  let res: Response;
+  try {
+    res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -47,17 +51,37 @@ export const askQorgai = createServerFn({ method: "POST" })
         })),
       }),
     });
+  } catch (e) {
+    console.error("[askQorgai] network error", e);
+    return { ok: false, error: "failed", retryable: true };
+  }
 
-    if (!res.ok || !res.body) {
-      if (res.status === 429) return { text: "", error: "rate_limited" as const };
-      if (res.status === 402) return { text: "", error: "no_credits" as const };
-      return { text: "", error: "failed" as const };
-    }
+  if (!res.ok || !res.body) {
+    const body = await res.text().catch(() => "");
+    console.error("[askQorgai] gateway error", res.status, body.slice(0, 500));
+    if (res.status === 429) return { ok: false, error: "rate_limited", retryable: false };
+    if (res.status === 402) return { ok: false, error: "no_credits", retryable: false };
+    return { ok: false, error: "failed", retryable: res.status >= 500 };
+  }
 
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
-    let text = "";
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let text = "";
+  let failed = false;
+
+  const collectFromResponse = (r: unknown) => {
+    const out = (r as { output?: Array<{ type?: string; content?: Array<{ type?: string; text?: string }> }> })?.output;
+    if (!Array.isArray(out)) return "";
+    return out
+      .filter((i) => i.type === "message")
+      .flatMap((i) => i.content ?? [])
+      .filter((c) => c.type === "output_text" && typeof c.text === "string")
+      .map((c) => c.text as string)
+      .join("");
+  };
+
+  try {
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
@@ -68,17 +92,45 @@ export const askQorgai = createServerFn({ method: "POST" })
         if (!line.startsWith("data:")) continue;
         const payload = line.slice(5).trim();
         if (!payload || payload === "[DONE]") continue;
+        let evt: { type?: string; delta?: string; response?: unknown };
         try {
-          const evt = JSON.parse(payload) as { type?: string; delta?: string; response?: { output_text?: string } };
-          if (evt.type === "response.output_text.delta" && typeof evt.delta === "string") text += evt.delta;
-          if (!text && evt.type === "response.completed" && evt.response?.output_text) {
-            text = evt.response.output_text;
-          }
+          evt = JSON.parse(payload);
         } catch {
-          /* ignore keepalives */
+          continue;
+        }
+        if (evt.type === "response.output_text.delta" && typeof evt.delta === "string") {
+          text += evt.delta;
+        } else if (evt.type === "response.completed" || evt.type === "response.incomplete") {
+          if (!text) text = collectFromResponse(evt.response);
+        } else if (evt.type === "response.failed" || evt.type === "error") {
+          failed = true;
+          console.error("[askQorgai] stream error event", payload.slice(0, 500));
         }
       }
     }
+  } catch (e) {
+    console.error("[askQorgai] stream read error", e);
+    if (!text) return { ok: false, error: "failed", retryable: true };
+  }
 
-    return { text: text.trim(), error: null };
+  const finalText = text.trim();
+  if (!finalText) return { ok: false, error: "failed", retryable: !failed ? true : true };
+  return { ok: true, text: finalText };
+}
+
+export const askQorgai = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => Input.parse(data))
+  .handler(async ({ data }) => {
+    const key = process.env["LOVABLE_API_KEY"];
+    if (!key) return { text: "", error: "no_key" as const };
+
+    let last: Attempt = { ok: false, error: "failed", retryable: true };
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) await new Promise((r) => setTimeout(r, 600 * attempt));
+      last = await callModel(key, data);
+      if (last.ok) return { text: last.text, error: null };
+      if (!last.retryable) break;
+    }
+    return { text: "", error: last.ok ? null : last.error };
   });
+
