@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { lessons, getLesson } from "@/data/lessons";
 import { useI18n } from "@/lib/i18n";
 import { useProgress } from "@/lib/progress";
@@ -28,18 +28,24 @@ function LessonPage() {
 
 function LessonRunner({ lessonId }: { lessonId: string }) {
   const { t, tr } = useI18n();
-  const { completeLesson, isUnlocked, finalLessonId } = useProgress();
+  const { completeLesson, startLesson, resumeStep, isUnlocked, finalLessonId } = useProgress();
   const { profile } = useProfile();
   const navigate = useNavigate();
   const { ask } = useQorgai();
   const lesson = useMemo(() => getLesson(Number(lessonId)), [lessonId]);
 
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(() => (lesson ? resumeStep(lesson.id) : 0));
   const [picked, setPicked] = useState<number | null>(null);
   const [wrongPicks, setWrongPicks] = useState<number[]>([]);
   const [mistakes, setMistakes] = useState(0);
   const [finished, setFinished] = useState(false);
   const [jump, setJump] = useState(false);
+
+  // Автосохранение места, на котором ребёнок остановился.
+  useEffect(() => {
+    if (lesson && !finished) startLesson(lesson.id, step);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lesson?.id, step, finished]);
 
   if (lesson && !isUnlocked(lesson.id)) {
     return (
