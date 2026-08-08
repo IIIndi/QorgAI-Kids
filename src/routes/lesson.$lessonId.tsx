@@ -28,24 +28,33 @@ function LessonPage() {
 
 function LessonRunner({ lessonId }: { lessonId: string }) {
   const { t, tr } = useI18n();
-  const { completeLesson, startLesson, resumeStep, isUnlocked, finalLessonId } = useProgress();
+  const { completeLesson, startLesson, resumeStep, isUnlocked, finalLessonId, ready: progressReady } = useProgress();
   const { profile } = useProfile();
   const navigate = useNavigate();
   const { ask } = useQorgai();
   const lesson = useMemo(() => getLesson(Number(lessonId)), [lessonId]);
 
-  const [step, setStep] = useState(() => (lesson ? resumeStep(lesson.id) : 0));
+  const [step, setStep] = useState(0);
+  const [restored, setRestored] = useState(false);
   const [picked, setPicked] = useState<number | null>(null);
   const [wrongPicks, setWrongPicks] = useState<number[]>([]);
   const [mistakes, setMistakes] = useState(0);
   const [finished, setFinished] = useState(false);
   const [jump, setJump] = useState(false);
 
+  // Возврат на сохранённое место после загрузки прогресса из базы.
+  useEffect(() => {
+    if (!progressReady || restored || !lesson) return;
+    setStep(resumeStep(lesson.id));
+    setRestored(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [progressReady, restored, lesson?.id]);
+
   // Автосохранение места, на котором ребёнок остановился.
   useEffect(() => {
-    if (lesson && !finished) startLesson(lesson.id, step);
+    if (lesson && restored && !finished) startLesson(lesson.id, step);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lesson?.id, step, finished]);
+  }, [lesson?.id, step, finished, restored]);
 
   if (lesson && !isUnlocked(lesson.id)) {
     return (
