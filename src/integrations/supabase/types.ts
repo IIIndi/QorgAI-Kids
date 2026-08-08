@@ -14,7 +14,117 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      child_profiles: {
+        Row: {
+          age: string
+          created_at: string
+          lang: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          age?: string
+          created_at?: string
+          lang?: string
+          name?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          age?: string
+          created_at?: string
+          lang?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      lesson_progress: {
+        Row: {
+          attempts: number
+          completed_at: string | null
+          correct: number
+          created_at: string
+          last_step: number
+          lesson_id: number
+          stars: number
+          status: string
+          total: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          completed_at?: string | null
+          correct?: number
+          created_at?: string
+          last_step?: number
+          lesson_id: number
+          stars?: number
+          status?: string
+          total?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          completed_at?: string | null
+          correct?: number
+          created_at?: string
+          last_step?: number
+          lesson_id?: number
+          stars?: number
+          status?: string
+          total?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_stats: {
+        Row: {
+          achievements: Json
+          coins: number
+          created_at: string
+          current_lesson_id: number
+          last_day: string | null
+          percent: number
+          safety_score: number
+          streak: number
+          total_stars: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          achievements?: Json
+          coins?: number
+          created_at?: string
+          current_lesson_id?: number
+          last_day?: string | null
+          percent?: number
+          safety_score?: number
+          streak?: number
+          total_stars?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          achievements?: Json
+          coins?: number
+          created_at?: string
+          current_lesson_id?: number
+          last_day?: string | null
+          percent?: number
+          safety_score?: number
+          streak?: number
+          total_stars?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
