@@ -103,6 +103,8 @@ const dict = {
   chooseAge: { ru: "Сколько тебе лет?", kk: "Жасың нешеде?", en: "How old are you?" },
   age89: { ru: "8–9 лет", kk: "8–9 жас", en: "8–9 years" },
   age1011: { ru: "10–11 лет", kk: "10–11 жас", en: "10–11 years" },
+  ageOther: { ru: "Другое", kk: "Басқа", en: "Other" },
+
   saveProfile: { ru: "Сохранить профиль", kk: "Профильді сақтау", en: "Save profile" },
   greetingNamed: {
     ru: "Я Qorgau. Сегодня научу тебя быть в безопасности!",
