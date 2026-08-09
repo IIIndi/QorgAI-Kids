@@ -292,7 +292,7 @@ QorgAI Kids - это MVP, а не финальная production-версия.
 
 **Live Demo:** https://qorgaikids.lovable.app
 
-**Demo Video:** [вставить ссылку]
+**Demo Video:** https://canva.link/y42y6vhtaevjz1o
 
 **Presentation:** https://canva.link/svexdxhc64mqxqh
 
