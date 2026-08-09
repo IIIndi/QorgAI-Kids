@@ -47,8 +47,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       active = false;
+      clearTimeout(t);
       sub.subscription.unsubscribe();
     };
+
   }, []);
 
   return <AuthContext.Provider value={{ userId, ready }}>{children}</AuthContext.Provider>;
