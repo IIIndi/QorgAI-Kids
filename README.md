@@ -235,9 +235,7 @@ MVP разработан с использованием:
 - TypeScript
 - Vite
 - Tailwind CSS
-- GitHub
 
-**AI:** [указать модель/API после финальной проверки]
 
 ---
 
@@ -260,10 +258,6 @@ QorgAI Kids - это MVP, а не финальная production-версия.
 ## 📈 Следующий этап
 
 Следующая версия QorgAI Kids будет включать:
-
-🇰🇿 казахский язык  
-🇷🇺 русский язык  
-🇬🇧 английский язык  
 
 **Pre-test → обучение → Post-test**
 
@@ -296,11 +290,11 @@ QorgAI Kids - это MVP, а не финальная production-версия.
 
 ## 🔗 Ссылки
 
-**Live Demo:** [вставить ссылку]
+**Live Demo:** https://qorgaikids.lovable.app
 
 **Demo Video:** [вставить ссылку]
 
-**Presentation:** [вставить ссылку]
+**Presentation:** https://canva.link/svexdxhc64mqxqh
 
 **Исследования и источники:** https://www.gov.kz/memleket/entities/edu/press/news/details/685574?lang=ru
 https://dknews.kz/ru/v-strane/362293-deti-v-kazahstane-provodyat-bolshe-vremeni-onlayn
