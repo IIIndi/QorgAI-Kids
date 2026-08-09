@@ -77,34 +77,41 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      const { data } = await supabase
-        .from("child_profiles")
-        .select("name, age, lang, created_at")
-        .eq("user_id", userId)
-        .maybeSingle();
+      try {
+        const { data } = await supabase
+          .from("child_profiles")
+          .select("name, age, lang, created_at")
+          .eq("user_id", userId)
+          .maybeSingle();
 
-      if (!active) return;
+        if (!active) return;
 
-      if (data && data.name) {
-        const loaded: Profile = {
-          name: data.name,
-          age: (data.age as AgeGroup) ?? "8-9",
-          createdAt: data.created_at,
-          lang: data.lang,
-        };
-        setProfile(loaded);
-        localStorage.setItem(KEY, JSON.stringify(loaded));
-      } else if (local) {
-        setProfile(local);
-        await supabase.from("child_profiles").upsert({
-          user_id: userId,
-          name: local.name,
-          age: local.age,
-          lang: local.lang ?? "ru",
-        });
+        if (data && data.name) {
+          const loaded: Profile = {
+            name: data.name,
+            age: asAge(data.age),
+            createdAt: data.created_at,
+            lang: data.lang,
+          };
+          setProfile(loaded);
+          writeLocal(loaded);
+        } else if (local) {
+          setProfile(local);
+          await supabase.from("child_profiles").upsert({
+            user_id: userId,
+            name: local.name,
+            age: local.age,
+            lang: local.lang ?? "ru",
+          });
+        }
+      } catch (e) {
+        // Нет связи с облаком — показываем локально сохранённый профиль.
+        console.error("[profile] cloud load failed", e);
+        if (active && local) setProfile(local);
       }
-      setReady(true);
+      if (active) setReady(true);
     })();
+
 
     return () => {
       active = false;
