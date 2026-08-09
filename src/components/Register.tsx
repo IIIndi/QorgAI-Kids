@@ -31,22 +31,24 @@ export function Register({ onDone }: { onDone?: () => void }) {
         <div className="space-y-2">
           <span className="text-xs font-extrabold uppercase text-muted-foreground">{t("chooseAge")}</span>
           <div className="grid grid-cols-2 gap-3">
-            {(["8-9", "10-11"] as AgeGroup[]).map((a) => (
+            {(["8-9", "10-11", "other"] as AgeGroup[]).map((a) => (
               <button
                 key={a}
                 type="button"
                 onClick={() => setAge(a)}
                 className={cn(
                   "btn-pop border-2 px-4 py-3 font-extrabold",
+                  a === "other" && "col-span-2",
                   age === a ? "border-primary bg-secondary" : "border-border bg-card hover:bg-muted",
                 )}
               >
-                {a === "8-9" ? "🧒 " : "🧑 "}
-                {a === "8-9" ? t("age89") : t("age1011")}
+                {a === "8-9" ? "🧒 " : a === "10-11" ? "🧑 " : "✨ "}
+                {a === "8-9" ? t("age89") : a === "10-11" ? t("age1011") : t("ageOther")}
               </button>
             ))}
           </div>
         </div>
+
 
         <button
           disabled={!valid}
