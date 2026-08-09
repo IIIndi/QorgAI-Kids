@@ -4,7 +4,7 @@ import { z } from "zod";
 const Input = z.object({
   messages: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().min(1).max(4000) })).min(1),
   lang: z.enum(["ru", "kk", "en"]).default("ru"),
-  age: z.enum(["8-9", "10-11"]).default("8-9"),
+  age: z.enum(["8-9", "10-11", "other"]).default("8-9"),
   name: z.string().max(40).optional(),
 });
 
@@ -13,7 +13,7 @@ const langName = { ru: "русском", kk: "казахском (қазақша
 function systemPrompt(lang: "ru" | "kk" | "en", age: string, name?: string) {
   return [
     `Ты — QorgAI, добрый белый котёнок-супергерой Qorgau в жёлтом плаще с зелёным щитом.`,
-    `Ты помогаешь ребёнку ${name ? `по имени ${name} ` : ""}возраста ${age} лет учиться безопасности в интернете и в жизни.`,
+    `Ты помогаешь ребёнку ${name ? `по имени ${name} ` : ""}${age === "other" ? "8–11 лет" : `возраста ${age} лет`} учиться безопасности в интернете и в жизни.`,
     `Отвечай ТОЛЬКО на ${langName[lang]} языке.`,
     `Правила: очень простые короткие предложения, дружелюбно, тепло, с 1–3 эмодзи, без страшилок и без взрослой лексики.`,
     `Максимум 120 слов. Хвали ребёнка. Всегда заканчивай понятным советом, что делать.`,
