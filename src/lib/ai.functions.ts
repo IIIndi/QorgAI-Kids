@@ -4,7 +4,7 @@ import { z } from "zod";
 const Input = z.object({
   messages: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().min(1).max(4000) })).min(1),
   lang: z.enum(["ru", "kk", "en"]).default("ru"),
-  age: z.enum(["8-9", "10-11"]).default("8-9"),
+  age: z.enum(["8-9", "10-11", "other"]).default("8-9"),
   name: z.string().max(40).optional(),
 });
 

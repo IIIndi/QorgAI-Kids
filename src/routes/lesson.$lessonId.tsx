@@ -187,7 +187,7 @@ function LessonRunner({ lessonId }: { lessonId: string }) {
           <div>
             <div className="text-xs font-extrabold uppercase text-muted-foreground">
               {t("lesson")} {lesson.id} · {lesson.track === "online" ? t("online") : t("real")}
-              {profile ? ` · ${profile.age === "8-9" ? t("age89") : t("age1011")}` : ""}
+              {profile ? ` · ${profile.age === "8-9" ? t("age89") : profile.age === "10-11" ? t("age1011") : t("ageOther")}` : ""}
             </div>
             <h1 className="font-display text-2xl leading-tight">{tr(lesson.title)}</h1>
           </div>

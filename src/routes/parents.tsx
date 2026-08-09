@@ -50,7 +50,7 @@ function ParentsPage() {
             <div className="font-display text-xl">{profile.name}</div>
           </div>
           <div className="rounded-full bg-secondary px-3 py-1 text-sm font-extrabold text-secondary-foreground">
-            {profile.age === "8-9" ? t("age89") : t("age1011")}
+            {profile.age === "8-9" ? t("age89") : profile.age === "10-11" ? t("age1011") : t("ageOther")}
           </div>
           <div className="rounded-full bg-accent px-3 py-1 text-sm font-extrabold text-accent-foreground">
             {t("completion")}: {percent}%
