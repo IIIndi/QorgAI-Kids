@@ -22,16 +22,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     void (async () => {
-      const { data } = await supabase.auth.getSession();
-      let id = data.session?.user.id ?? null;
-      if (!id) {
-        const { data: anon } = await supabase.auth.signInAnonymously();
-        id = anon.session?.user.id ?? null;
+      let id: string | null = null;
+      try {
+        const { data } = await supabase.auth.getSession();
+        id = data.session?.user.id ?? null;
+        if (!id) {
+          const { data: anon } = await supabase.auth.signInAnonymously();
+          id = anon.session?.user.id ?? null;
+        }
+      } catch (e) {
+        // Облако недоступно — работаем офлайн на localStorage, интерфейс не блокируем.
+        console.error("[auth] anonymous sign-in failed", e);
       }
       if (!active) return;
       setUserId(id);
       setReady(true);
     })();
+
+    // Страховка: если сеть висит, интерфейс всё равно должен появиться.
+    const t = setTimeout(() => {
+      if (active) setReady(true);
+    }, 4000);
+
 
     return () => {
       active = false;
