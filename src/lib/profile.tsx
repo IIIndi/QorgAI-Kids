@@ -2,10 +2,15 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 
-export type AgeGroup = "8-9" | "10-11";
+export type AgeGroup = "8-9" | "10-11" | "other";
 export type Profile = { name: string; age: AgeGroup; createdAt: string; lang?: string };
 
 const KEY = "qorgai-profile-v1";
+const NAME_KEY = "qorgai_child_name";
+const AGE_KEY = "qorgai_age_group";
+
+const AGES: AgeGroup[] = ["8-9", "10-11", "other"];
+const asAge = (v: unknown): AgeGroup => (AGES.includes(v as AgeGroup) ? (v as AgeGroup) : "8-9");
 
 type Ctx = {
   profile: Profile | null;
@@ -20,11 +25,37 @@ const ProfileContext = createContext<Ctx | null>(null);
 function readLocal(): Profile | null {
   try {
     const raw = localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as Profile) : null;
+    if (raw) {
+      const p = JSON.parse(raw) as Profile;
+      if (p?.name) return { ...p, age: asAge(p.age) };
+    }
+    // Запасной путь: отдельные простые ключи хранения.
+    const name = localStorage.getItem(NAME_KEY);
+    if (name) {
+      return { name, age: asAge(localStorage.getItem(AGE_KEY)), createdAt: new Date().toISOString() };
+    }
+    return null;
   } catch {
     return null;
   }
 }
+
+function writeLocal(p: Profile | null) {
+  try {
+    if (p) {
+      localStorage.setItem(KEY, JSON.stringify(p));
+      localStorage.setItem(NAME_KEY, p.name);
+      localStorage.setItem(AGE_KEY, p.age);
+    } else {
+      localStorage.removeItem(KEY);
+      localStorage.removeItem(NAME_KEY);
+      localStorage.removeItem(AGE_KEY);
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
   const { userId, ready: authReady } = useAuth();
