@@ -120,9 +120,9 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
   const persist = (next: Profile | null) => {
     setProfile(next);
-    if (next) localStorage.setItem(KEY, JSON.stringify(next));
-    else localStorage.removeItem(KEY);
+    writeLocal(next);
     if (!userId) return;
+
     if (next) {
       void supabase.from("child_profiles").upsert({
         user_id: userId,
