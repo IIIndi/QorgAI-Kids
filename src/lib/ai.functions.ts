@@ -44,6 +44,10 @@ async function callModel(
         model: "openai/gpt-5.6-luna",
         stream: true,
         store: false,
+        // Низкий reasoning + лимит вывода: модель не «съедает» бюджет на размышления
+        // и всегда успевает вернуть текст ответа ребёнку.
+        reasoning: { effort: "low" },
+        max_output_tokens: 900,
         instructions: systemPrompt(data.lang, data.age, data.name),
         input: data.messages.map((m) => ({
           role: m.role,
